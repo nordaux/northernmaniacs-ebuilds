@@ -2,6 +2,7 @@ app-cdr
 app-crypt
 app-paludis
 app-portage
+app-shells
 app-text
 dev-games
 dev-libs

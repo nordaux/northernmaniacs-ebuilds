@@ -1,0 +1,370 @@
+diff -Nur rssh-2.3.2/main.c.in rssh-2.3.2.rw/main.c.in
+--- rssh-2.3.2/main.c.in	2006-01-03 18:25:05.000000000 +0100
++++ rssh-2.3.2.rw/main.c.in	2007-08-02 00:10:43.000000000 +0200
+@@ -214,6 +214,10 @@
+ 			argvec[1] = "4";
+ 		else if ( !(strcmp(*cmd, PATH_RSYNC)) )
+ 			argvec[1] = "5";
++		else if ( !(strcmp(*cmd, PATH_GITR)) )
++			argvec[1] = "6";
++		else if ( !(strcmp(*cmd, PATH_GITU)) )
++			argvec[1] = "7";
+ 		else {
+ 			log_set_priority(LOG_ERR);
+ 			log_msg("fatal error identifying the correct command "
+@@ -262,6 +266,8 @@
+ 	printf("%20s = %s\n", "sftp server binary", PATH_SFTP_SERVER);
+ 	printf("%20s = %s\n", "cvs binary path", PATH_CVS);
+ 	printf("%20s = %s\n", "rdist binary path", PATH_RDIST);
++	printf("%20s = %s\n", "git-receive-pack binary path", PATH_GITR);
++	printf("%20s = %s\n", "git-upload-pack binary path", PATH_GITU);
+ 	printf("%20s = %s\n\n", "rsync binary path", PATH_RSYNC);
+ }
+ 
+diff -Nur rssh-2.3.2/pathnames.h.in rssh-2.3.2.rw/pathnames.h.in
+--- rssh-2.3.2/pathnames.h.in	2003-08-08 23:49:28.000000000 +0200
++++ rssh-2.3.2.rw/pathnames.h.in	2007-08-02 00:11:46.000000000 +0200
+@@ -37,6 +37,10 @@
+ #define PATH_RDIST		"@rdist_path@"
+ #define PATH_RSYNC		"@rsync_path@"
+ 
++/* XXX: lazy boy... */
++#define PATH_GITR		"/usr/bin/git-receive-pack"
++#define PATH_GITU		"/usr/bin/git-upload-pack"
++
+ /* these generally are overridden by the makefile */
+ #ifndef PATH_RSSH_CONFIG
+ #define PATH_RSSH_CONFIG	"/etc/rssh.conf"
+diff -Nur rssh-2.3.2/rssh.1 rssh-2.3.2.rw/rssh.1
+--- rssh-2.3.2/rssh.1	2006-01-03 18:32:01.000000000 +0100
++++ rssh-2.3.2.rw/rssh.1	2007-08-02 00:44:02.000000000 +0200
+@@ -18,7 +18,7 @@
+ allowing a user whose shell is configured to
+ .B rssh
+ to use one or more of the command(s) \fBscp\fP(1), \fBsftp\fP(1)
+-\fBcvs\fP(1), \fBrdist\fP(1), and \fBrsync\fP(1), and 
++\fBcvs\fP(1), \fBrdist\fP(1), \fBrsync\fP(1) and \fBgit\fP(1), and 
+ .I only
+ those commands.  It is intended primarily to work with OpenSSH (see
+ http://www.openssh.com), but may work with other implementations.
+@@ -200,7 +200,7 @@
+ problematical cases were found which were likely to be common.
+ .P
+ The alternative would have been to include a complete command-line parser for
+-rcp, rdist, and rsync; this was way out of the scope of this project.  In
++rcp, rdist, rsync and git; this was way out of the scope of this project.  In
+ practice, the existing parser should suffice.  If, however, you find cases
+ where it does not, please post details to the rssh mailing list.  Details
+ about how to post to the mailing list can be found at the rssh homepage.
+diff -Nur rssh-2.3.2/rssh_chroot_helper.c rssh-2.3.2.rw/rssh_chroot_helper.c
+--- rssh-2.3.2/rssh_chroot_helper.c	2006-01-03 18:36:47.000000000 +0100
++++ rssh-2.3.2.rw/rssh_chroot_helper.c	2007-08-02 00:12:38.000000000 +0200
+@@ -254,6 +254,12 @@
+ 	case 5:
+ 		cmd_path = PATH_RSYNC;
+ 		break;
++	case 6:
++		cmd_path = PATH_GITR;
++		break;
++	case 7:
++		cmd_path = PATH_GITU;
++		break;
+ 	default:
+ 		log_msg("invalid command specified");
+ 		exit(2);
+diff -Nur rssh-2.3.2/rssh.conf rssh-2.3.2.rw/rssh.conf
+--- rssh-2.3.2/rssh.conf	2005-11-27 22:28:36.000000000 +0100
++++ rssh-2.3.2.rw/rssh.conf	2007-08-02 01:06:44.000000000 +0200
+@@ -11,6 +11,7 @@
+ #allowcvs
+ #allowrdist
+ #allowrsync
++#allowgit
+ 
+ # set the default umask
+ umask = 022
+@@ -28,21 +29,21 @@
+ ##########################################
+ # EXAMPLES of configuring per-user options
+ 
+-#user=rudy:077:00010:  # the path can simply be left out to not chroot
+-#user=rudy:077:00010   # the ending colon is optional
++#user=rudy:077:000010:  # the path can simply be left out to not chroot
++#user=rudy:077:000010   # the ending colon is optional
+ 
+-#user=rudy:011:00100:  # cvs, with no chroot 
+-#user=rudy:011:01000:  # rdist, with no chroot
+-#user=rudy:011:10000:  # rsync, with no chroot
+-#user="rudy:011:00001:/usr/local/chroot"  # whole user string can be quoted
+-#user=rudy:01"1:00001:/usr/local/chroot"  # or somewhere in the middle, freak!
+-#user=rudy:'011:00001:/usr/local/chroot'  # single quotes too
++#user=rudy:011:000100:  # cvs, with no chroot 
++#user=rudy:011:001000:  # rdist, with no chroot
++#user=rudy:011:010000:  # rsync, with no chroot
++#user="rudy:011:000001:/usr/local/chroot"  # whole user string can be quoted
++#user=rudy:01"1:000001:/usr/local/chroot"  # or somewhere in the middle, freak!
++#user=rudy:'011:000001:/usr/local/chroot'  # single quotes too
+ 
+ # if your chroot_path contains spaces, it must be quoted...
+ # In the following examples, the chroot_path is "/usr/local/my chroot"
+-#user=rudy:011:00001:"/usr/local/my chroot"  # scp with chroot
+-#user=rudy:011:00010:"/usr/local/my chroot"  # sftp with chroot
+-#user=rudy:011:00011:"/usr/local/my chroot"  # both with chroot
++#user=rudy:011:000001:"/usr/local/my chroot"  # scp with chroot
++#user=rudy:011:000010:"/usr/local/my chroot"  # sftp with chroot
++#user=rudy:011:000011:"/usr/local/my chroot"  # both with chroot
+ 
+ # Spaces before or after the '=' are fine, but spaces in chrootpath need
+ # quotes.
+diff -Nur rssh-2.3.2/rssh.conf.5 rssh-2.3.2.rw/rssh.conf.5
+--- rssh-2.3.2/rssh.conf.5	2006-01-07 03:25:05.000000000 +0100
++++ rssh-2.3.2.rw/rssh.conf.5	2007-08-02 00:51:02.000000000 +0200
+@@ -50,6 +50,12 @@
+ Tells the shell that rsync is allowed.
+ .RE
+ .P
++.B allowgit
++.RS
++Tells the shell that git is allowed.
++Only git-receive-pack and git-upload-pack possible.
++.RE
++.P
+ .B umask
+ .RS
+ Sets the umask value for file creations in the scp/sftp session.  This is
+@@ -123,7 +129,7 @@
+ .RE
+ .B access bits
+ .RS
+-Five binary digits, which indicate whether the user is allowed to use rsync,
++Six binary digits, which indicate whether the user is allowed to use git, rsync,
+ rdist, cvs, sftp, and scp, in that order.  One means the command is allowed,
+ zero means it is not.
+ .RE
+diff -Nur rssh-2.3.2/rssh.conf.5.in rssh-2.3.2.rw/rssh.conf.5.in
+--- rssh-2.3.2/rssh.conf.5.in	2005-11-28 17:54:56.000000000 +0100
++++ rssh-2.3.2.rw/rssh.conf.5.in	2007-08-02 00:51:03.000000000 +0200
+@@ -50,6 +50,12 @@
+ Tells the shell that rsync is allowed.
+ .RE
+ .P
++.B allowgit
++.RS
++Tells the shell that git is allowed.
++Only git-receive-pack and git-upload-pack possible.
++.RE
++.P
+ .B umask
+ .RS
+ Sets the umask value for file creations in the scp/sftp session.  This is
+@@ -123,7 +129,7 @@
+ .RE
+ .B access bits
+ .RS
+-Five binary digits, which indicate whether the user is allowed to use rsync,
++Six binary digits, which indicate whether the user is allowed to use git, rsync,
+ rdist, cvs, sftp, and scp, in that order.  One means the command is allowed,
+ zero means it is not.
+ .RE
+diff -Nur rssh-2.3.2/rsshconf.c rssh-2.3.2.rw/rsshconf.c
+--- rssh-2.3.2/rsshconf.c	2005-11-27 23:35:43.000000000 +0100
++++ rssh-2.3.2.rw/rsshconf.c	2007-08-02 00:19:26.000000000 +0200
+@@ -71,6 +71,7 @@
+ 	"allowcvs",
+ 	"allowrdist",
+ 	"allowrsync",
++	"allowgit",
+ 	"chrootpath",
+ 	"logfacility",
+ 	"umask",
+@@ -106,6 +107,9 @@
+ int process_allow_rsync( ShellOptions_t *opts, const char *line, 
+ 		        const int lineno );
+ 
++int process_allow_git( ShellOptions_t *opts, const char *line, 
++		        const int lineno );
++
+ int get_token( const char *str, char *buf, const int buflen, 
+ 	       const bool colon, const bool ign_spc );
+ 
+@@ -217,21 +221,26 @@
+ 			return FALSE;
+ 		return TRUE;
+ 	case 6:
++		/* allow git */
++		if ( !(process_allow_git(opts, line + pos, lineno) ) )
++			return FALSE;
++		return TRUE;
++	case 7:
+ 		/* default chroot path */
+ 		if ( !(process_chroot_path(opts, line + pos, lineno) ) )
+ 			return FALSE;
+ 		return TRUE;
+-	case 7:
++	case 8:
+ 		/* syslog log facility */
+ 		if ( !(process_log_facility(opts, line + pos, lineno) ) )
+ 			return FALSE;
+ 		return TRUE;
+-	case 8:
++	case 9:
+ 		/* set the user's umask */
+ 		if ( !(process_umask(opts, line + pos, lineno) ) )
+ 			return FALSE;
+ 		return TRUE;
+-	case 9:
++	case 10:
+ 		/* user */
+ 		if ( !(process_user(opts, line + pos, lineno) ) )
+ 			return FALSE;
+@@ -554,6 +563,34 @@
+ }
+ 
+ 
++/* 
++ * process_allow_git() - make sure there are no tokens after the keyword,
++ *                        other than a possible comment.  If there are
++ *                        additional tokens other than comments, there is a
++ *                        syntax error, and FALSE is returned.  Otherwise, the
++ *                        line is ok, so opts are set to allow rsync, and TRUE
++ *                        is returned.
++ */
++int process_allow_git( ShellOptions_t *opts, 
++		       const char *line,
++		       const int lineno )
++{
++	int pos;
++
++	if ( !(pos = eat_comment(line)) ){
++		if (log) log_msg("line %d: syntax error parsing config file", 
++				lineno);
++		return FALSE;
++	}
++	if (log){
++		log_set_priority(LOG_INFO);
++		log_msg("allowing git to all users");
++	}
++	opts->shell_flags |= RSSH_ALLOW_GIT;
++	return TRUE;
++}
++
++
+ int process_chroot_path( ShellOptions_t *opts, 
+ 		         const char *line,
+ 		         const int lineno )
+@@ -851,6 +888,7 @@
+ 	bool	allow_cvs;
+ 	bool	allow_rdist;
+ 	bool	allow_rsync;
++	bool	allow_git;
+ 
+ 	/* make space for user options */
+ 	if ( !(temp = (char *)malloc(CFG_LINE_LEN + 1)) ){
+@@ -923,7 +961,7 @@
+ 		return FALSE;
+ 	}
+ 	if ( !validate_access(axs, &allow_sftp, &allow_scp, &allow_cvs,
+-			      &allow_rdist, &allow_rsync) ){
++			      &allow_rdist, &allow_rsync, &allow_git) ){
+ 		if (log){
+ 			log_set_priority(LOG_ERR);
+ 			log_msg("syntax error parsing access bits, line %d", lineno);
+@@ -997,6 +1035,10 @@
+ 		if (log) log_msg("allowing rsync to user %s", user);
+ 		opts->shell_flags |= RSSH_ALLOW_RSYNC;
+ 	}
++	if ( allow_git ){
++		if (log) log_msg("allowing git to user %s", user);
++		opts->shell_flags |= RSSH_ALLOW_GIT;
++	}
+ 	if ( path ){
+ 		if (log) log_msg("chrooting %s to %s", user, path);
+ 		opts->shell_flags |= RSSH_USE_CHROOT;
+diff -Nur rssh-2.3.2/rssh.h rssh-2.3.2.rw/rssh.h
+--- rssh-2.3.2/rssh.h	2003-08-08 21:02:02.000000000 +0200
++++ rssh-2.3.2.rw/rssh.h	2007-08-02 00:20:11.000000000 +0200
+@@ -46,6 +46,7 @@
+ #define RSSH_ALLOW_CVS   (1 << 2)
+ #define RSSH_ALLOW_RDIST (1 << 3)
+ #define RSSH_ALLOW_RSYNC (1 << 4)
+-#define RSSH_USE_CHROOT	 (1 << 5)
++#define RSSH_ALLOW_GIT	 (1 << 5)
++#define RSSH_USE_CHROOT	 (1 << 6)
+ 
+ #endif /* _rssh_h */
+diff -Nur rssh-2.3.2/util.c rssh-2.3.2.rw/util.c
+--- rssh-2.3.2/util.c	2006-01-03 18:37:39.000000000 +0100
++++ rssh-2.3.2.rw/util.c	2007-08-02 01:14:13.000000000 +0200
+@@ -78,6 +78,7 @@
+ 	if ( flags & RSSH_ALLOW_SCP ) size += 4;   /* "scp" plus a space */
+ 	if ( flags & RSSH_ALLOW_SFTP ) size += 5;
+ 	if ( flags & RSSH_ALLOW_CVS ) size += 4;
++	if ( flags & RSSH_ALLOW_GIT ) size += 4;
+ 	if ( flags & RSSH_ALLOW_RDIST ) size += 6;
+ 	if ( flags & RSSH_ALLOW_RSYNC ) size += 5; /* last one, no space */
+ 
+@@ -99,6 +100,8 @@
+ 			strncat(cmd, "cvs ", size);
+ 		if ( flags & RSSH_ALLOW_RDIST )
+ 			strncat(cmd, "rdist ", size);
++		if ( flags & RSSH_ALLOW_GIT )
++			strncat(cmd, "git ", size);
+ 		if ( flags & RSSH_ALLOW_RSYNC )
+ 			strncat(cmd, "rsync", size);
+ 	}
+@@ -245,6 +248,12 @@
+ 		return PATH_RSYNC;
+ 	}
+ 
++	if ( check_command(cl, opts, PATH_GITR, RSSH_ALLOW_GIT) )
++		return PATH_GITR;
++
++	if ( check_command(cl, opts, PATH_GITU, RSSH_ALLOW_GIT) )
++		return PATH_GITU;
++
+ 	return NULL;
+ }
+ 
+@@ -309,22 +318,23 @@
+  *                     same name, and returns FALSE if the bits are not valid
+  */
+ int validate_access( const char *temp, bool *allow_sftp, bool *allow_scp,
+-	       	     bool *allow_cvs, bool *allow_rdist, bool *allow_rsync )
++	       	     bool *allow_cvs, bool *allow_rdist, bool *allow_rsync, bool *allow_git )
+ {
+ 	int	i;
+ 
+-#define NUM_ACCESS_BITS 5
++#define NUM_ACCESS_BITS 6
+ 
+ 	if ( strlen(temp) != NUM_ACCESS_BITS ) return FALSE;
+ 	/* make sure the bits are valid */
+ 	for ( i = 0; i < NUM_ACCESS_BITS; i++ )
+ 		if ( temp[i] < '0' || temp[i] > '1' ) return FALSE;
+ 	/* This is easier to read if we allign the = */
+-	*allow_rsync = temp[0] - '0';
+-	*allow_rdist = temp[1] - '0';
+-	*allow_cvs   = temp[2] - '0';
+-	*allow_sftp  = temp[3] - '0';
+-	*allow_scp   = temp[4] - '0';
++	*allow_git   = temp[0] - '0';
++	*allow_rsync = temp[1] - '0';
++	*allow_rdist = temp[2] - '0';
++	*allow_cvs   = temp[3] - '0';
++	*allow_sftp  = temp[4] - '0';
++	*allow_scp   = temp[5] - '0';
+ 	return TRUE;
+ }
+ 
+diff -Nur rssh-2.3.2/util.h rssh-2.3.2.rw/util.h
+--- rssh-2.3.2/util.h	2006-01-03 18:37:55.000000000 +0100
++++ rssh-2.3.2.rw/util.h	2007-08-02 00:25:01.000000000 +0200
+@@ -37,7 +37,7 @@
+ char *extract_root( char *root, char *path );
+ int  validate_umask( const char *temp, int *mask );
+ int validate_access( const char *temp, bool *allow_sftp, bool *allow_scp,
+-	       	     bool *allow_cvs, bool *allow_rdist, bool *allow_rsync );
++	       	     bool *allow_cvs, bool *allow_rdist, bool *allow_rsync, bool *allow_git );
+ bool opt_exist( char *cl, char opt );
+ char *get_username( void );
+ 
