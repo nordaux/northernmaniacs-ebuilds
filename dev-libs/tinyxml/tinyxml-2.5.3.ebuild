@@ -15,7 +15,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE="doc"
 
 RDEPEND=""
-DEPEND="doc? ( app-doc/doxygen )"
+DEPEND=""
 
 S=${WORKDIR}/${PN}
 
