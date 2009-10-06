@@ -1,0 +1,38 @@
+diff -Naur dares-0.6.5.orig/backend/dares.c dares-0.6.5/backend/dares.c
+--- dares-0.6.5.orig/backend/dares.c	2005-07-22 22:33:52.000000000 +0200
++++ dares-0.6.5/backend/dares.c	2009-10-06 12:36:12.530307603 +0200
+@@ -657,13 +657,16 @@
+     return DARES_OPEN_CANNOT_OPEN_MAGIC;
+   }
+ 
+-  if (-1 == magic_load(global_magic_cookie, MAGIC_FILE))    // load magic file
++  if (-1 == magic_load(global_magic_cookie, MAGIC_FILE_LOCAL))
++    printf("Could not load local file magic database file 'magic%s', loading system file magic database file 'magic%s'.", use_mime ? ".mime" : "");
+   {
+-    printf("Could not load file magic database file 'magic%s', using default database\n",
+-            use_mime ? ".mime" : "");
+-    magic_load(global_magic_cookie, NULL);        // use default magic database
++    if (-1 == magic_load(global_magic_cookie, MAGIC_FILE))    // load magic file
++    {
++      printf("Could not load file magic database file '/usr/share/dares/magic%s', using default database\n",
++              use_mime ? ".mime" : "");
++      magic_load(global_magic_cookie, NULL);        // use default magic database
++    }
+   }
+-
+   for (i=0; i<MAXMAGIS; i++)            // initialize file type array
+   {
+     all_types[i].first = NULL;
+diff -Naur dares-0.6.5.orig/include/dares.h dares-0.6.5/include/dares.h
+--- dares-0.6.5.orig/include/dares.h	2005-07-20 18:19:30.000000000 +0200
++++ dares-0.6.5/include/dares.h	2009-10-05 20:56:11.398841206 +0200
+@@ -18,7 +18,8 @@
+ 
+ #define MAXMAGIS 100000                 // different file types in all_type[]
+ #define MAX_TYPE 80                     // max length of file type string
+-#define MAGIC_FILE "magic"              // default name of magic file
++#define MAGIC_FILE "/usr/share/dares/magic" // default name of magic file
++#define MAGIC_FILE_LOCAL "magic"	// default name of magic file
+ 
+ // define DOS to compile for DOS/Windows environment
+ #undef DOS
