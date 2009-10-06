@@ -10,4 +10,6 @@ media-gfx
 media-video
 sys-apps
 sys-fs
+www-client
+x11-apps
 x11-wm

@@ -1,1 +1,2 @@
-app-shells/rssh:git - allow git access
+app-shells/rssh:git - Allow git access
+x11-apps/ccsm:libsexy - Enable libsexy support
