@@ -4,8 +4,10 @@ app-paludis
 app-portage
 app-shells
 app-text
+dev-cpp
 dev-games
 dev-libs
+dev-util
 media-gfx
 media-video
 net-misc

@@ -14,7 +14,7 @@ SRC_URI="mirror://sourceforge/crayzedsgui/${MY_P}.tar.gz
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="amd64 ppc x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="debug devil directfb doc examples expat freeimage irrlicht lua opengl xerces-c xml"
 
 RDEPEND="dev-libs/libpcre
