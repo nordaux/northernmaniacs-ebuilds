@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <layman>
+  <overlays>
   <overlay 
 	type="git" 
 	src="git://github.com/mlilien/northernmaniacs-ebuilds.git" 
@@ -9,4 +10,5 @@
   	<description>collection of mostly experimental ebuilds </description>
   	<link>http://wiki.github.com/mlilien/northernmaniacs-ebuilds</link>
   </overlay>
+  </overlays>
 </layman>
