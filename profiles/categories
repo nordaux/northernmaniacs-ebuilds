@@ -15,5 +15,6 @@ sys-apps
 sys-fs
 www-client
 x11-apps
+x11-drivers
 x11-plugins
 x11-wm
