@@ -1,0 +1,130 @@
+diff -Naur ois.orig/includes/linux/LinuxKeyboard.h ois/includes/linux/LinuxKeyboard.h
+--- ois.orig/includes/linux/LinuxKeyboard.h	2007-01-04 20:37:44.000000000 +0100
++++ ois/includes/linux/LinuxKeyboard.h	2009-10-11 00:34:28.144275152 +0200
+@@ -61,6 +61,8 @@
+ 		bool _injectKeyDown( KeySym key, int text );
+ 		bool _injectKeyUp( KeySym key );
+ 
++		bool isKeyRepeat(XEvent* event);
++
+ 		//! 1:1 Conversion Map between X Key Events and OIS KeyCodes
+ 		typedef std::map<KeySym, KeyCode> XtoOIS_KeyMap;
+ 		XtoOIS_KeyMap keyConversion;
+@@ -75,7 +77,6 @@
+ 		bool keyFocusLost;
+ 
+ 		bool xAutoRepeat;
+-		bool oldXAutoRepeat;
+ 
+ 		std::string mGetString;
+ 	};
+diff -Naur ois.orig/src/linux/LinuxKeyboard.cpp ois/src/linux/LinuxKeyboard.cpp
+--- ois.orig/src/linux/LinuxKeyboard.cpp	2008-01-28 16:59:27.000000000 +0100
++++ ois/src/linux/LinuxKeyboard.cpp	2009-10-11 00:33:16.618180238 +0200
+@@ -44,7 +44,6 @@
+ 	keyFocusLost = false;
+ 
+ 	xAutoRepeat = useXRepeat;
+-	oldXAutoRepeat = false;
+ 
+ 	//X Key Map to KeyCode
+ 	keyConversion.insert(XtoOIS_KeyMap::value_type(XK_1, KC_1));
+@@ -212,20 +211,6 @@
+ 		XGrabKeyboard(display,window,True,GrabModeAsync,GrabModeAsync,CurrentTime);
+ 
+ 	keyFocusLost = false;
+-
+-	if( xAutoRepeat == false )
+-	{
+-		//We do not want to blindly turn on autorepeat later when quiting if
+-		//it was not on to begin with.. So, let us check and see first
+-		XKeyboardState old;
+-		XGetKeyboardControl( display, &old );
+-		oldXAutoRepeat = false;
+-
+-		if( old.global_auto_repeat == AutoRepeatModeOn )
+-			oldXAutoRepeat = true;
+-
+-		XAutoRepeatOff( display );
+-	}
+ }
+ 
+ //-------------------------------------------------------------------//
+@@ -233,9 +218,6 @@
+ {
+ 	if( display )
+ 	{
+-		if( oldXAutoRepeat )
+-			XAutoRepeatOn(display);
+-
+ 		if( grabKeyboard )
+ 			XUngrabKeyboard(display, CurrentTime);
+ 
+@@ -246,6 +228,27 @@
+ }
+ 
+ //-------------------------------------------------------------------//
++bool LinuxKeyboard::isKeyRepeat(XEvent* event)
++{
++      // Borrowed from SDL and GII...
++      
++      XEvent peekEvent;
++      bool repeated = false;
++
++      if (XPending(display)) {
++              XPeekEvent(display, &peekEvent);
++              if ( (peekEvent.type == KeyPress) &&
++                       (peekEvent.xkey.keycode == event->xkey.keycode) &&
++                       ((peekEvent.xkey.time - event->xkey.time) < 2) ) {
++                      repeated = true;
++                      XNextEvent(display, &peekEvent);
++              }
++      }
++
++      return repeated;
++}
++
++//-------------------------------------------------------------------//
+ unsigned int UTF8ToUTF32(unsigned char* buf)
+ {
+ 	unsigned char &FirstChar = buf[0];
+@@ -302,9 +305,9 @@
+ 	LinuxInputManager* linMan = static_cast<LinuxInputManager*>(mCreator);
+ 
+ 	while( XPending(display) > 0 )
+-	{
+-		XNextEvent(display, &event);
+-
++	{
++		XNextEvent(display, &event);
++
+ 		if( KeyPress == event.type )
+ 		{
+ 			unsigned int character = 0;
+@@ -334,16 +337,18 @@
+ 			//Check for Alt-Tab
+ 			if( event.xkey.state & Mod1Mask && key == XK_Tab )
+ 				linMan->_setGrabState(false);
+-		}
++		}
+ 		else if( KeyRelease == event.type )
+ 		{
+-			//Mask out the modifier states X sets.. or we will get improper values
+-			event.xkey.state &= ~ShiftMask;
+-			event.xkey.state &= ~LockMask;
+-
+-			//Else, it is a valid key release
+-			XLookupString(&event.xkey,NULL,0,&key,NULL);
+-			_injectKeyUp(key);
++                        if (xAutoRepeat || !isKeyRepeat(&event)) {
++                        //Mask out the modifier states X sets.. or we will get improper values
++                        event.xkey.state &= ~ShiftMask;
++                        event.xkey.state &= ~LockMask;
++
++                        //Else, it is a valid key release
++                        XLookupString(&event.xkey,NULL,0,&key,NULL);
++                        _injectKeyUp(key);
++                      }
+ 		}
+ 	}
+ 

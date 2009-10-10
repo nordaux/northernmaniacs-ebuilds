@@ -4,7 +4,8 @@
 
 inherit autotools
 
-DESCRIPTION="Object-oriented Input System - A cross-platform C++ input handling library"
+DESCRIPTION="Object-oriented Input System - A cross-platform C++ input handling library.  This ebuild enhances ois so, that ois behaviour is heavily changed! 
+See http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955 for details."
 HOMEPAGE="http://www.wreckedgames.com/"
 SRC_URI="mirror://sourceforge/wgois/${P/-/_}.tar.gz"
 
@@ -21,10 +22,11 @@ S=${WORKDIR}/${PN}
 src_unpack() {
 	unpack ${A}
 	cd "${S}"
-#	epatch "${FILESDIR}"/linuxmousesmooth.patch
 	#http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955
 	epatch "${FILESDIR}"/2671880.patch
 	epatch "${FILESDIR}"/2671880_linux.patch
+
+	epatch "${FILESDIR}"/x11_key_repeat.patch
 	eautoreconf
 }
 
