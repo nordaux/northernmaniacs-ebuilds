@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<layman>
+  <overlay 
+	type="git" 
+	src="git://github.com/mlilien/northernmaniacs-ebuilds.git" 
+	name="northernmaniacs" 
+	status="unofficial" 
+	contact="marcel.lilienthal@gmail.com">
+  	<description>collection of mostly experimental ebuilds </description>
+  	<link>http://wiki.github.com/mlilien/northernmaniacs-ebuilds</link>
+  </overlay>
+</layman>
