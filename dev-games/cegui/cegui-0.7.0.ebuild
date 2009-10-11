@@ -19,6 +19,7 @@ IUSE="debug devil directfb doc examples expat freeimage irrlicht lua opengl xerc
 
 RDEPEND="dev-libs/libpcre
 	media-libs/freetype:2
+	dev-libs/tinyxml
 	devil? ( media-libs/devil )
 	directfb? ( dev-libs/DirectFB )
 	expat? ( dev-libs/expat )
@@ -42,17 +43,10 @@ DEPEND="${RDEPEND}
 S=${WORKDIR}/${MY_P}
 
 src_prepare() {
-	# epatch "${FILESDIR}"/${P}-gcc43.patch
-	#sed -i \
-	#	-e 's/ILvoid/void/g' \
-	#	ImageCodecModules/DevILImageCodec/CEGUIDevILImageCodec.cpp \
-	#	|| die "sed failed"
 	if use examples ; then
 		cp -r Samples Samples.clean
 		rm -f $(find Samples.clean -name 'Makefile*')
-		rm -rf Samples.clean/bin
 	fi
-	eautoreconf #220040
 }
 
 src_configure() {
@@ -60,7 +54,6 @@ src_configure() {
 		$(use_enable debug) \
 		$(use_enable devil) \
 		$(use_enable directfb directfb-renderer) \
-		$(use_enable examples samples) \
 		$(use_enable expat) \
 		$(use_enable freeimage) \
 		$(use_enable irrlicht irrlicht-renderer) \
@@ -76,19 +69,17 @@ src_configure() {
 		--enable-tinyxml \
 		--disable-corona \
 		--disable-dependency-tracking \
-		--disable-external-tinyxml \
 		--disable-samples \
 		--disable-silly \
 		--without-gtk2 \
-		--without-ogre-renderer
+		--disable-ogre-renderer
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
-	dodoc AUTHORS ChangeLog README TODO
 	if use doc ; then
-		dohtml -r documentation/api_reference || die "dohtml failed"
-		dodoc documentation/*.pdf || die "dodoc failed"
+		emake html || die "emake html failed"
+		dohtml -r doc/doxygen/html || die "dohtml failed"
 	fi
 	if use examples ; then
 		insinto /usr/share/doc/${PF}/Samples
