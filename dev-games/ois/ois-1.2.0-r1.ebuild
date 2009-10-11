@@ -19,7 +19,16 @@ DEPEND="x11-libs/libXaw
 
 S=${WORKDIR}/${PN}
 
+mywarn() {
+    ewarn 
+    ewarn "This ebuild enhances ois so, that ois behaviour is heavily changed!"
+    ewarn "See http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955" 
+    ewarn "for details."
+    ewarn
+}
+
 src_unpack() {
+	mywarn
 	unpack ${A}
 	cd "${S}"
 	#http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955
@@ -32,4 +41,8 @@ src_unpack() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
+}
+
+pkg_postinst() {
+	mywarn
 }
