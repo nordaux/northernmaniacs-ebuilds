@@ -1,0 +1,9 @@
+# not really tested yet
+# documentation is in german only
+=app-cdr/dares
+
+# masked for testing
+=dev-games/ois-1.2.0-r1
+
+# masked for testing
+=dev-games/ogre-1.6.4
