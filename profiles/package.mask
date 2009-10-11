@@ -1,6 +1,6 @@
 # not really tested yet
 # documentation is in german only
-=app-cdr/dares
+=app-cdr/dares-0.6.5
 
 # masked for testing
 =dev-games/ois-1.2.0-r1
