@@ -39,7 +39,6 @@ src_install() {
 	dodoc {changes,readme}.txt || die "dodoc failed"
 
 	if use doc; then
-		dodoc tutorial_gettingStarted.txt || die "dodoc failed"
 		dohtml -r docs/* || die "dohtml failed"
 	fi
 }
