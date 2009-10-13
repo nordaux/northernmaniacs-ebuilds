@@ -7,7 +7,7 @@ HOMEPAGE="http://www.oddbeat.de/wiki/etm"
 SRC_URI="http://downloads.oddbeat.de/ETMv${PV}_source.zip
 		 http://cloud.github.com/downloads/mlilien/northernmaniacs-ebuilds/ETMv${PV}_source.zip"
 
-LICENSE="GPL-2-with-runtime-exception"
+LICENSE="GPL-2-with-linking-exception"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
