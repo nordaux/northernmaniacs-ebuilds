@@ -30,6 +30,7 @@ RDEPEND="dev-libs/libpcre
 		dev-lang/lua
 		dev-lang/toluapp
 	)
+	ogre? ( dev-games/ogre )
 	opengl? (
 		virtual/opengl
 		virtual/glu
@@ -75,6 +76,7 @@ src_configure() {
 		$(use_enable opengl opengl-renderer) \
 		$(use_enable xerces-c) \
 		$(use_enable xml libxml) \
+		$(use_enable ogre ogre-renderer) \
 		--enable-static \
 		--enable-tga \
 		--enable-tinyxml \
