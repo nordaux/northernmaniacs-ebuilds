@@ -5,5 +5,5 @@
 # masked for testing
 =dev-games/ois-1.2.0-r1
 
-# masked for testing
-=dev-games/ogre-1.6.4
+# ogre <1.6.4 doesn't build if cegui >=0.7
+<dev-games/ogre-1.6.4

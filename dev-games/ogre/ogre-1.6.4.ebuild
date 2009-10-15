@@ -1,6 +1,6 @@
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/dev-games/ogre/ogre-1.6.2.ebuild,v 1.2 2009/04/12 02:44:58 mr_bones_ Exp $
+# $Header: $
 
 EAPI=2
 inherit multilib eutils autotools flag-o-matic
@@ -12,7 +12,7 @@ SRC_URI="mirror://sourceforge/ogre/ogre-v${PV//./-}.tar.bz2"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="doc cg devil double-precision examples freeimage gtk threads"
+IUSE="doc cegui cg devil double-precision examples freeimage gtk threads"
 RESTRICT="test" #139905
 
 RDEPEND="dev-libs/zziplib
@@ -23,6 +23,7 @@ RDEPEND="dev-libs/zziplib
 	x11-libs/libXaw
 	x11-libs/libXrandr
 	x11-libs/libX11
+	cegui? ( <dev-games/cegui-0.7 )
 	cg? ( media-gfx/nvidia-cg-toolkit )
 	devil? ( media-libs/devil )
 	freeimage? ( media-libs/freeimage )
@@ -35,7 +36,7 @@ DEPEND="${RDEPEND}
 S=${WORKDIR}/${PN}
 
 src_prepare() {
-	ecvs_clean
+	#prepare examples if needed
 	if use examples ; then
 		cp -r Samples install-examples || die
 		find install-examples \
@@ -47,8 +48,11 @@ src_prepare() {
 			$(grep -rl /usr/local/lib/OGRE install-examples) \
 			|| die "sed failed"
 	fi
-	sed -i -e '/CPPUNIT/d' configure.in || die "sed failed"
-	eautoreconf
+	
+	if ! use cegui ; then
+		#don't build any Samples especially not CEGUIOGRE
+		sed -i -e 's/Samples//g' Makefile.in || die "sed failed"
+	fi
 }
 
 src_configure() {
@@ -69,6 +73,10 @@ src_configure() {
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
+
+	#remove .la files
+	rm -f $(find ${D}/usr/$(get_libdir) -name *.la)
+
 	if use doc ; then
 		insinto /usr/share/doc/${PF}/html
 		doins -r Docs/* || die "doins Docs failed"
