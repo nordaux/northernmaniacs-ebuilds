@@ -2,25 +2,22 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit autotools eutils multilib
+EAPI=2
+inherit autotools eutils
 
-EAPI="2"
-
-MY_P=CEGUI-${PV}
-MY_D=CEGUI-DOCS-${PV}
+MY_P=CEGUI-${PV%b}
 DESCRIPTION="Crazy Eddie's GUI System is a free library providing windowing and widgets for graphics APIs / engines where such functionality is not natively available, or severely lacking. The library is object orientated, written in C++, and targeted at games developers who should be spending their time creating great games, not building GUI sub-systems!"
 HOMEPAGE="http://www.cegui.org.uk/"
-SRC_URI="mirror://sourceforge/crayzedsgui/${MY_P}.tar.gz
-	doc? ( mirror://sourceforge/crayzedsgui/${MY_D}.tar.gz )"
+SRC_URI="mirror://sourceforge/crayzedsgui/${MY_P}b.tar.gz
+	doc? ( mirror://sourceforge/crayzedsgui/${MY_P}-DOCS.tar.gz )"
 
 LICENSE="MIT"
-SLOT="0.7"
-KEYWORDS="~amd64 ~x86"
-IUSE="debug devil directfb doc examples expat freeimage gtk irrlicht lua ogre opengl xerces-c xml"
+SLOT="0"
+KEYWORDS="amd64 ppc x86"
+IUSE="debug devil directfb doc examples expat freeimage gtk irrlicht lua opengl xerces-c xml"
 
 RDEPEND="dev-libs/libpcre
 	media-libs/freetype:2
-	dev-libs/tinyxml
 	devil? ( media-libs/devil )
 	directfb? ( dev-libs/DirectFB )
 	expat? ( dev-libs/expat )
@@ -44,27 +41,25 @@ DEPEND="${RDEPEND}
 S=${WORKDIR}/${MY_P}
 
 src_prepare() {
+	epatch "${FILESDIR}"/${P}-gcc43.patch
+	sed -i \
+		-e 's/ILvoid/void/g' \
+		ImageCodecModules/DevILImageCodec/CEGUIDevILImageCodec.cpp \
+		|| die "sed failed"
 	if use examples ; then
 		cp -r Samples Samples.clean
 		rm -f $(find Samples.clean -name 'Makefile*')
+		rm -rf Samples.clean/bin
 	fi
-
-	#fix Makefiles for sloting ... some aren't using --includedir=
-	sed -e "s/prefix)\/include/includedir)/g" \
-		-i $(grep -lr "\$(prefix)/include" --include=Makefile.am .)
-	eautomake
+	eautoreconf #220040
 }
 
 src_configure() {
-	MYECONF=
 	econf \
-		--libdir=/usr/$(get_libdir)/${P} \
-		--includedir=/usr/include/${P} \
-		--datarootdir=/usr/share/${P} \
-		--datadir=/usr/share/${P} \
 		$(use_enable debug) \
 		$(use_enable devil) \
 		$(use_enable directfb directfb-renderer) \
+		$(use_enable examples samples) \
 		$(use_enable expat) \
 		$(use_enable freeimage) \
 		$(use_enable irrlicht irrlicht-renderer) \
@@ -80,30 +75,19 @@ src_configure() {
 		--enable-tinyxml \
 		--disable-corona \
 		--disable-dependency-tracking \
+		--disable-external-tinyxml \
 		--disable-samples \
 		--disable-silly \
-		$(use_with gtk gtk2)
+		$(use_with gtk gtk2) \
+		--without-ogre-renderer
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
-
-	#remove .la files
-	rm -f $(find ${D}/usr/$(get_libdir)/${P} -name *.la)
-
-	#rename binarys
-	find ${D}/usr/bin -type f -print0 | xargs -0 -I \{\} mv \{\} \{\}-${PV}
-
-	#move and rename pkgconfig files
-	mv ${D}/usr/$(get_libdir)/${P}/pkgconfig ${D}/usr/$(get_libdir)/
-	cd ${D}/usr/$(get_libdir)/pkgconfig 
-	find -type f -print0 | xargs -0 -I \{\} basename \{\} .pc | \
-		xargs -I \{\} mv \{\}.pc \{\}-${PV}.pc
-	cd ${S}
-
+	dodoc AUTHORS ChangeLog README TODO
 	if use doc ; then
-		emake html || die "emake html failed"
-		dohtml -r doc/doxygen/html/* || die "dohtml failed"
+		dohtml -r documentation/api_reference || die "dohtml failed"
+		dodoc documentation/*.pdf || die "dodoc failed"
 	fi
 	if use examples ; then
 		insinto /usr/share/doc/${PF}/Samples
