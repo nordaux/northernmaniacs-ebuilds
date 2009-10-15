@@ -16,13 +16,12 @@ SRC_URI="mirror://sourceforge/crayzedsgui/${MY_P}.tar.gz
 LICENSE="MIT"
 SLOT="0.7"
 KEYWORDS="~amd64 ~x86"
-IUSE="debug devil directfb doc examples expat freeimage gtk irrlicht lua ogre opengl xerces-c xml"
+IUSE="debug devil doc examples expat freeimage gtk irrlicht lua ogre opengl xerces-c xml"
 
 RDEPEND="dev-libs/libpcre
 	media-libs/freetype:2
 	dev-libs/tinyxml
 	devil? ( media-libs/devil )
-	directfb? ( dev-libs/DirectFB )
 	expat? ( dev-libs/expat )
 	freeimage? ( media-libs/freeimage )
 	irrlicht? ( dev-games/irrlicht )
@@ -65,7 +64,6 @@ src_configure() {
 		--datadir=/usr/share/${P} \
 		$(use_enable debug) \
 		$(use_enable devil) \
-		$(use_enable directfb directfb-renderer) \
 		$(use_enable expat) \
 		$(use_enable freeimage) \
 		$(use_enable irrlicht irrlicht-renderer) \
