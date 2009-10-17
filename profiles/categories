@@ -1,5 +1,6 @@
 app-cdr
 app-crypt
+app-emulation
 app-paludis
 app-portage
 app-shells
@@ -9,6 +10,7 @@ dev-games
 dev-libs
 dev-util
 media-gfx
+media-tv
 media-video
 net-misc
 sys-apps

@@ -1,0 +1,26 @@
+--- platform/gtk-x11/plat/config.py.orig	2009-02-08 20:56:02.000000000 +0100
++++ platform/gtk-x11/plat/config.py	2009-02-08 20:57:12.000000000 +0100
+@@ -112,10 +112,10 @@
+     value = descriptor.default
+ 
+     if descriptor == prefs.MOVIES_DIRECTORY:
+-        value = os.path.expanduser('~/Movies/Miro')
++        value = os.path.expanduser('~/.miro/Movies')
+ 
+     elif descriptor == prefs.NON_VIDEO_DIRECTORY:
+-        value = os.path.expanduser('~/Desktop')
++        value = os.path.expanduser('~/.miro/Nonvideo')
+ 
+     elif descriptor == prefs.GETTEXT_PATHNAME:
+         value = resources.path("../../locale")
+--- platform/gtk-x11/plat/upgrade.py.orig	2009-02-08 20:57:48.000000000 +0100
++++ platform/gtk-x11/plat/upgrade.py	2009-02-08 20:58:32.000000000 +0100
+@@ -78,7 +78,7 @@
+         _copy_gconf("/apps/democracy/player", "/apps/miro")
+         client.recursive_unset("/apps/democracy", 1)
+         if client.get("/apps/miro/MoviesDirectory") is None:
+-            value = os.path.expanduser('~/Movies/Democracy')
++            value = os.path.expanduser('~/.miro/Movies')
+             client.set_string("/apps/miro/MoviesDirectory", value)
+ 
+             if not os.path.exists(value):
