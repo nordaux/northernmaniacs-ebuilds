@@ -1,8 +1,7 @@
-# not really tested yet
-
-#
+# masked for testing
 =media-gfx/nvidia-cg-toolkit-2.1.0016
 
+# not really tested yet
 # documentation is in german only
 =app-cdr/dares-0.6.5
 
