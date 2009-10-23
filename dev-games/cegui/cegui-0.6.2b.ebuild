@@ -2,11 +2,12 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI=2
+EAPI="2"
+
 inherit autotools eutils
 
 MY_P=CEGUI-${PV%b}
-DESCRIPTION="Crazy Eddie's GUI System is a free library providing windowing and widgets for graphics APIs / engines where such functionality is not natively available, or severely lacking. The library is object orientated, written in C++, and targeted at games developers who should be spending their time creating great games, not building GUI sub-systems!"
+DESCRIPTION="Crazy Eddie's GUI System is a free library providing windowing and widgets for graphic APIs/engines."
 HOMEPAGE="http://www.cegui.org.uk/"
 SRC_URI="mirror://sourceforge/crayzedsgui/${MY_P}b.tar.gz
 	doc? ( mirror://sourceforge/crayzedsgui/${MY_P}-DOCS.tar.gz )"
