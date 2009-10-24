@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-DESCRIPTION="The Editable Terrain Manager is an addon library for OGRE which manages and displays terrain based on heightmap data."
+DESCRIPTION="The Editable Terrain Manager is an OGRE addon library for handling terrain based on heightmap data."
 HOMEPAGE="http://www.oddbeat.de/wiki/etm"
 SRC_URI="http://downloads.oddbeat.de/ETMv${PV}_source.zip
 		 http://cloud.github.com/downloads/mlilien/northernmaniacs-ebuilds/ETMv${PV}_source.zip"
@@ -19,12 +19,12 @@ DEPEND="${RDEPEND}"
 
 src_unpack() {
 	unpack ${A}
-	cd ${S}
+	cd "${S}"
 	mkdir bin obj
 }
 
 src_install() {
 	dolib.so bin/*.so
 	insinto /usr/include/OGRE
-	doins include/*.h 	
+	doins include/*.h
 }

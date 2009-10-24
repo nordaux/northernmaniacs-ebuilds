@@ -1,11 +1,12 @@
-# Copyright 1999-2008 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 inherit autotools
 
-DESCRIPTION="Object-oriented Input System - A cross-platform C++ input handling library.  This ebuild enhances ois so, that ois behaviour is heavily changed! 
-See http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955 for details."
+DESCRIPTION="Object-oriented Input System - A cross-platform C++ input handling library."
+#This ebuild enhances ois so, that ois behaviour is heavily changed! 
+#See http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955 for details."
 HOMEPAGE="http://www.wreckedgames.com/"
 SRC_URI="mirror://sourceforge/wgois/${P/-/_}.tar.gz"
 
@@ -14,17 +15,18 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-DEPEND="x11-libs/libXaw
+RDEPEND="x11-libs/libXaw
 	x11-libs/libX11"
+DEPEND="${RDEPEND}"
 
 S=${WORKDIR}/${PN}
 
 mywarn() {
-    ewarn 
-    ewarn "This ebuild enhances ois so, that ois behaviour is heavily changed!"
-    ewarn "See http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955" 
-    ewarn "for details."
-    ewarn
+	ewarn ""
+	ewarn "This ebuild enhances ois so, that ois behaviour is heavily changed!"
+	ewarn "See http://sourceforge.net/tracker/?func=detail&aid=2671880&group_id=149835&atid=775955"
+	ewarn "for details."
+	ewarn
 }
 
 src_unpack() {

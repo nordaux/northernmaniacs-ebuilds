@@ -14,11 +14,11 @@ IUSE="ssl"
 RDEPEND="ssl? ( dev-libs/openssl )"
 DEPEND="${RDEPEND}"
 
-src_unpack() {
+src_unpack () {
 	unpack ${A}
-	cd ${S}
+	cd "${S}"
 
-	#upstreams default configuration disables libxml2 but the build system 
+	#upstreams default configuration disables libxml2 but the build system
 	#doesnt know, so sed it out.
 	sed -ie "s/^INCLUDE/$#INCLUDE/g" Makefile || die "couldnt disable xml2"
 	sed -ie "/^[ \t]\{1,\}-Wl,-lxml2 \\\/d" Makefile.Defines.linux-x86-32 \
@@ -35,10 +35,10 @@ src_unpack() {
 	fi
 }
 
-src_compile() {
+src_compile () {
 	emake shared || die "emake failed"
 }
 
-src_install() {
+src_install () {
 	emake PREFIX="/usr" DESTDIR="${D}" install_shared || die "install failed"
 }

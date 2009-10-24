@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <use>
+    <flag name="devil">Enable image loading via DevIL</flag>
+    <flag name="freeimage">Enable image loading via FreeImage</flag>
+    <flag name="irrlicht">Enable the Irrlicht renderer</flag>
+    <flag name="xerces-c">Enable the Xerces-C++ XML parser module</flag>
+	<flag name="ogre">Enable the Ogre renderer</flag>
+  </use>
+</pkgmetadata>

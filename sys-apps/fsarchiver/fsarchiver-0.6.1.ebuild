@@ -13,12 +13,14 @@ SLOT="0"
 KEYWORDS="~x86 ~amd64"
 IUSE="lzo lzma gcrypt static"
 
-DEPEND="sys-libs/zlib
+
+RDEPEND="sys-libs/zlib
 	app-arch/bzip2
 	>=sys-fs/e2fsprogs-1.41.4
 	lzma? ( >=app-arch/xz-utils-4.999.9_beta )
 	lzo? ( >=dev-libs/lzo-2.02 )
 	gcrypt? ( dev-libs/libgcrypt )"
+DEPEND="${RDEPEND}"
 
 src_unpack() {
 	unpack ${A}

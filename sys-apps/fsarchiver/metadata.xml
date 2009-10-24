@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<use>
+		<flag name="gcrypt">Use dev-libs/libgcrypt for crypto</flag>
+		<flag name="lzma">Allow accessing/creating lzma-compressed archives</flag>
+	</use>
+</pkgmetadata>

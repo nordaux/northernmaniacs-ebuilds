@@ -1,6 +1,6 @@
-# Copyright 1999-2008 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-
+# $Header: $
 
 inherit versionator
 
@@ -9,9 +9,9 @@ MY_DATE="November2008"
 DESCRIPTION="nvidia's c graphics compiler toolkit"
 HOMEPAGE="http://developer.nvidia.com/object/cg_toolkit.html"
 SRC_URI="x86? (
-	http://developer.download.nvidia.com/cg/Cg_2.0/${PV}/Cg-${MY_PV}_${MY_DATE}_x86.tgz )"
-	#amd64? (
-	#http://developer.download.nvidia.com/cg/Cg_2.0/${PV}/Cg-${MY_PV}_${MY_DATE}_x86_64.tgz )"
+	http://developer.download.nvidia.com/cg/Cg_2.0/${PV}/Cg-${MY_PV}_${MY_DATE}_x86.tgz )
+	amd64? (
+	http://developer.download.nvidia.com/cg/Cg_2.0/${PV}/Cg-${MY_PV}_${MY_DATE}_x86_64.tgz )"
 
 LICENSE="NVIDIA"
 SLOT="0"
@@ -19,7 +19,8 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 RESTRICT="strip"
 
-DEPEND="virtual/glut"
+RDEPEND="virtual/glut"
+DEPEND="${RDEPEND}"
 
 S="${WORKDIR}"
 

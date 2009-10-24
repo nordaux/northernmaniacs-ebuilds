@@ -1,27 +1,31 @@
-# Copyright 1999-2007 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/app-portage/genlop/genlop-0.30.8-r1.ebuild,v 1.1 2007/09/27 02:15:48 lavajoe Exp $
+# $Header: $
 
 inherit eutils bash-completion
 
 DESCRIPTION="A nice paludis.log parser (patched genlop)"
 HOMEPAGE="http://www.genoetigt.de/site/projects/plop"
 # I copied the genlop-0.30.8.tar.gz and renamed it to plop-0.1.tar.gz
-SRC_URI="http://www.genoetigt.de/plop/${P}.tar.gz"
-RESTRICT="nomirror"
+SRC_URI="http://www.genoetigt.de/plop/${P}.tar.gz
+		 http://cloud.github.com/downloads/mlilien/northernmaniacs-ebuilds/plop-0.2.3.tar.gz"
+RESTRICT="mirror"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc x86 ~x86-fbsd"
+KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-DEPEND=">=dev-lang/perl-5.8.0-r12
+DEPEND=""
+
+RDEPEND=">=dev-lang/perl-5.8.0-r12
 	 >=dev-perl/DateManip-5.40
 	 dev-perl/libwww-perl"
 
+
 src_unpack() {
 	unpack ${A}
-	mv  ${WORKDIR}/genlop-0.30.8/ ${S}
+	mv "${WORKDIR}/genlop-0.30.8/" "${S}"
 	cd "${S}"
 	mv genlop plop
 	mv genlop.1 plop.1
@@ -34,7 +38,7 @@ src_install() {
 	dobin plop || die "failed to install plop (via dobin)"
 	dodoc README Changelog
 	doman plop.1
-	dobashcompletion ${FILESDIR}/plop.bash-completion plop
+	dobashcompletion "${FILESDIR}/plop.bash-completion" plop
 }
 
 pkg_postinst() {

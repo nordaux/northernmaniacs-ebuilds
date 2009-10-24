@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit eutils
+EAPI="2"
+
+inherit eutils multilib
 
 DESCRIPTION="cross-platform C++ class library wrapping the berkeley sockets C API"
 HOMEPAGE="http://www.alhem.net/Sockets/index.html"
@@ -16,9 +18,9 @@ IUSE="ssl"
 RDEPEND="ssl? ( dev-libs/openssl )"
 DEPEND="${RDEPEND}"
 
-src_unpack() {
+src_unpack () {
 	unpack ${A}
-	cd ${S}
+	cd "${S}"
 	epatch "${FILESDIR}/2.3.7-include_fix.diff"
 
 	#upstreams default configuration disables libxml2 but the build system 
@@ -38,10 +40,11 @@ src_unpack() {
 	fi
 }
 
-src_compile() {
+src_compile () {
 	emake shared || die "emake failed"
 }
 
-src_install() {
+src_install () {
 	emake PREFIX="/usr" DESTDIR="${D}" install_shared || die "install failed"
+	dosym "libSockets.so.${PV}" usr/$(get_libdir)/libSockets.so
 }

@@ -17,7 +17,7 @@ SRC_URI="http://launchpad.net/${PN}/trunk/${PV}/+download/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="gconf gnome-keyring gpg +gtksourceview libnotify nautilus"
+IUSE="gconf gnome-keyring gpg +gtksourceview nautilus"
 
 DEPEND=">=dev-util/bzr-1.6_rc1
 	>=dev-python/pygtk-2.8
@@ -29,11 +29,7 @@ RDEPEND="${DEPEND}
 	gtksourceview? (
 		dev-python/pygtksourceview
 		gconf? ( dev-python/gconf-python )
-	)
-	libnotify? (
-		dev-python/notify-python
-		dev-util/bzr-dbus
-	 )"
+	)"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -41,9 +37,5 @@ S="${WORKDIR}/${MY_P}"
 
 src_install() {
 	distutils_src_install
-
-	if use libnotify; then
-		insinto /etc/xdg/autostart
-		doins bzr-notify.desktop
-	fi
 }
+

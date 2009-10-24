@@ -20,7 +20,7 @@ DEPEND="${RDEPEND}"
 
 src_unpack() {
 	unpack ${A}
-	cd ${S}
+	cd "${S}"
 	epatch "${FILESDIR}/magic_handling.patch" || die "epatch failed"
 }
 

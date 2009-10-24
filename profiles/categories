@@ -1,6 +1,4 @@
 app-cdr
-app-crypt
-app-emulation
 app-paludis
 app-portage
 app-shells
@@ -10,13 +8,11 @@ dev-games
 dev-libs
 dev-util
 media-gfx
+media-sound
 media-tv
-media-video
 net-misc
 sys-apps
 sys-fs
-www-client
 x11-apps
 x11-drivers
 x11-plugins
-x11-wm

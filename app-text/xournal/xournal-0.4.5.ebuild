@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit fdo-mime gnome2-utils
-
 EAPI="2"
+
+inherit fdo-mime gnome2-utils
 
 DESCRIPTION="Xournal is an application for notetaking, sketching, and keeping a journal using a stylus."
 HOMEPAGE="http://xournal.sourceforge.net/"
@@ -41,7 +41,7 @@ pkg_preinst() {
 
 pkg_postinst() {
 	fdo-mime_desktop_database_update
-	fdo-mime_mime_database_update	
+	fdo-mime_mime_database_update
 	gnome2_icon_cache_update
 }
 

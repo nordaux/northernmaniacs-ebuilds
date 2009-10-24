@@ -3,7 +3,7 @@
 # $Header: $
 
 EAPI=2
-inherit multilib eutils autotools flag-o-matic
+inherit multilib eutils flag-o-matic
 
 DESCRIPTION="Object-oriented Graphics Rendering Engine"
 HOMEPAGE="http://www.ogre3d.org/"
@@ -48,7 +48,7 @@ src_prepare() {
 			$(grep -rl /usr/local/lib/OGRE install-examples) \
 			|| die "sed failed"
 	fi
-	
+
 	if ! use cegui ; then
 		#don't build any Samples especially not CEGUIOGRE
 		sed -i -e 's/Samples//g' Makefile.in || die "sed failed"
@@ -75,7 +75,7 @@ src_install() {
 	emake DESTDIR="${D}" install || die "emake install failed"
 
 	#remove .la files
-	rm -f $(find ${D}/usr/$(get_libdir) -name *.la)
+	rm -f $(find "${D}/usr/$(get_libdir)" -name *.la)
 
 	if use doc ; then
 		insinto /usr/share/doc/${PF}/html

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<use>
+  <flag name="gconf">Enable Gconf support</flag>
+  <flag name='gpg'>Enable verifying/signing with <pkg>app-crypt/gnupg</pkg></flag>
+  <flag name='nautilus'>Integrate with Nautilus file manager</flag>
+  <flag name='gtksourceview'>Integrate with GTKsourceview</flag>
+</use>
+</pkgmetadata>

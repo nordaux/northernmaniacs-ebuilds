@@ -1,6 +1,6 @@
-# Copyright 1999-2008 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-fs/encfs/encfs-1.5.ebuild,v 1.5 2008/12/13 16:50:32 vanquirius Exp $
+# $Header: $
 
 WANT_AUTOMAKE="1.10"
 
@@ -12,15 +12,17 @@ DESCRIPTION="Encrypted Filesystem module for Linux"
 SRC_URI="http://encfs.googlecode.com/files/${MY_P}.tgz"
 HOMEPAGE="http://www.arg0.net/encfs"
 LICENSE="GPL-2"
-KEYWORDS="amd64 sparc x86"
+KEYWORDS="~amd64 ~x86"
 SLOT="0"
 IUSE="nls"
 
-DEPEND=">=dev-libs/openssl-0.9.7
+RDEPEND=">=dev-libs/openssl-0.9.7
 	>=sys-fs/fuse-2.6
 	>=dev-libs/rlog-1.3.6
 	>=dev-libs/boost-1.34
 	nls? ( >=sys-devel/gettext-0.14.1 )"
+
+DEPEND="${RDEPEND}"
 
 src_unpack() {
 	unpack ${A}
