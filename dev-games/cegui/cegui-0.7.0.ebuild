@@ -96,7 +96,7 @@ src_install() {
 
 	#move and rename pkgconfig files
 	mv "${D}/usr/$(get_libdir)/${P}/pkgconfig" "${D}/usr/$(get_libdir)/"
-	cd "${D}/usr/$(get_libdir)/pkgconfig "
+	cd "${D}/usr/$(get_libdir)/pkgconfig"
 	find -type f -print0 | xargs -0 -I \{\} basename \{\} .pc | \
 		xargs -I \{\} mv \{\}.pc \{\}-${SLOT}.pc
 	cd "${S}"
